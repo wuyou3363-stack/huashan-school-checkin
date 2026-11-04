@@ -59,7 +59,7 @@ function extraLines(p){
 }
 function taskOrder(t){const x=String(t);const module=x.includes('单词')?0:x.includes('词组')?1:x.includes('句子')?2:3;const stage=x.includes('闯关')?2:x.includes('跟读')?0:1;const kind=x.includes('记忆')?0:x.includes('翻译')?1:x.includes('听力')?2:3;return module*100+stage*10+kind}
 function sortTasks(){for(const p of students){for(const g of p.units){g.items.sort((a,b)=>taskOrder(a)-taskOrder(b))}}}
-function describe(p){let s=p.name+'\n今日完成'+(shortBook(p.book)||'教材待确认');for(const g of p.units)s+='\n'+g.unit+(g.book&&g.book!==p.book&&!(Number(p.grade)===6&&g.module==='句子')?' · '+g.book:'')+'\n'+g.items.join('\n');if(extraLines(p).length)s+='\n'+extraLines(p).join('\n');return s}
+function describe(p){let s=p.name+'\n今日完成'+(shortBook(p.book)||'教材待确认');for(const g of p.units)s+='\n'+g.unit+(g.book&&g.book!==p.book&&!(Number(p.grade)===6&&g.module==='句子')?' · '+g.book:'')+'\n'+g.items.join('\n');if(extraLines(p).length)s+='\n'+extraLines(p).join('\n');return s+'\n继续加油[加油][加油][加油]'}
 const REQUIRED=["查询日期","学生姓名","完成状态","任务项目","教材名称","教材版本","学习类型","单元名称","任务分类","目标数量"];
 function validateRows(rows){
  if(!rows.length)throw Error('CSV 中没有任务记录');
