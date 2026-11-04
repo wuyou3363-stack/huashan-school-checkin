@@ -59,7 +59,7 @@ function extraLines(p){
 }
 function taskOrder(t){const x=String(t);const module=x.includes('单词')?0:x.includes('词组')?1:x.includes('句子')?2:3;const stage=x.includes('闯关')?2:x.includes('跟读')?0:1;const kind=x.includes('记忆')?0:x.includes('翻译')?1:x.includes('听力')?2:3;return module*100+stage*10+kind}
 function sortTasks(){for(const p of students){for(const g of p.units){g.items.sort((a,b)=>taskOrder(a)-taskOrder(b))}}}
-function describe(p){let s=p.name+'\n今日学习'+(shortBook(p.book)||'教材待确认');for(const g of p.units)s+='\n'+g.unit+(g.book&&g.book!==p.book?' · '+g.book:'')+'\n'+g.items.join('\n');if(extraLines(p).length)s+='\n'+extraLines(p).join('\n');return s}
+function describe(p){let s=p.name+'\n今日学习'+(shortBook(p.book)||'教材待确认');for(const g of p.units)s+='\n'+g.unit+(g.book&&g.book!==p.book&&!(Number(p.grade)===6&&g.module==='句子')?' · '+g.book:'')+'\n'+g.items.join('\n');if(extraLines(p).length)s+='\n'+extraLines(p).join('\n');return s}
 const REQUIRED=["查询日期","学生姓名","完成状态","任务项目","教材名称","教材版本","学习类型","单元名称","任务分类","目标数量"];
 function validateRows(rows){
  if(!rows.length)throw Error('CSV 中没有任务记录');
@@ -92,7 +92,7 @@ function render(){
  const shown=available.filter(p=>(selected==='全部'||p.grade===selected)&&p.name.toLowerCase().includes(q));
  $('count').textContent='共 '+shown.length+(DONE_ONLY?' 名已打卡学生':' 名学生');
  const copyLabel=DONE_ONLY?'📋 复制打卡记录':'📋 复制学习任务';
- const card=(p,i)=>'<article class="card"><div class="head"><span class="name">'+escapeHTML(p.name)+'</span><span class="tag">'+(p.grade?p.grade+'年级':'未识别年级')+'</span></div><div class="book">'+(DONE_ONLY?'今日完成 ':'今日学习 ')+escapeHTML(shortBook(p.book)||'相关教材')+'</div>'+p.units.map(g=>'<div class="section"><div class="unit">'+escapeHTML(g.unit)+' · '+escapeHTML(g.module)+(g.book&&g.book!==p.book?' · '+escapeHTML(shortBook(g.book)):'')+'</div><div class="rows">'+g.items.map(it=>'<span class="item">'+escapeHTML(it)+'</span>').join('')+'</div></div>').join('')+((p.reading||p.text||p.practice||p.phonetic||p.smartReading||p.recitation)?'<div class="extra">'+extraLines(p).map(escapeHTML).join('<br>')+'</div>':'')+'<button class="copy" data-copy="'+i+'">'+copyLabel+'</button></article>';
+ const card=(p,i)=>'<article class="card"><div class="head"><span class="name">'+escapeHTML(p.name)+'</span><span class="tag">'+(p.grade?p.grade+'年级':'未识别年级')+'</span></div><div class="book">'+(DONE_ONLY?'今日完成 ':'今日学习 ')+escapeHTML(shortBook(p.book)||'相关教材')+'</div>'+p.units.map(g=>'<div class="section"><div class="unit">'+escapeHTML(g.unit)+' · '+escapeHTML(g.module)+(g.book&&g.book!==p.book&&!(Number(p.grade)===6&&g.module==='句子')?' · '+escapeHTML(shortBook(g.book)):'')+'</div><div class="rows">'+g.items.map(it=>'<span class="item">'+escapeHTML(it)+'</span>').join('')+'</div></div>').join('')+((p.reading||p.text||p.practice||p.phonetic||p.smartReading||p.recitation)?'<div class="extra">'+extraLines(p).map(escapeHTML).join('<br>')+'</div>':'')+'<button class="copy" data-copy="'+i+'">'+copyLabel+'</button></article>';
  $('cards').innerHTML=SCHOOLS.filter(s=>selectedSchool==='全部'||s===selectedSchool).map(school=>{
   const m=schoolMeta.find(m=>m.school===school);
   const cards=shown.map((p,i)=>p.school===school?card(p,i):'').join('');
